@@ -1,14 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion rootProject.setup.compileSdk
+    buildToolsVersion rootProject.setup.buildTools
+
     defaultConfig {
-        applicationId "com.uuch.android_zxinglibrary"
-        minSdkVersion 14
-        targetSdkVersion 23
+        minSdkVersion rootProject.setup.minSdk
+        targetSdkVersion rootProject.setup.targetSdk
         versionCode 1
         versionName "1.0"
+        applicationId "com.yomii.android_zxinglibrary"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -24,10 +25,13 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    //compile project(':lib-zxing')
-    compile 'cn.yipianfengye.android:zxing-library:2.1'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'pub.devrel:easypermissions:0.2.0'
     testCompile 'junit:junit:4.12'
+    //compile 'cn.yipianfengye.android:zxing-library:2.1'
+    //support
+    compile "com.android.support:appcompat-v7:$rootProject.versions.libSupport"
+    compile "com.android.support:recyclerview-v7:$rootProject.versions.libSupport"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile 'pub.devrel:easypermissions:0.4.0'
+    compile project(':lib-zxing')
 }

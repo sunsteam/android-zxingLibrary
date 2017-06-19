@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion rootProject.setup.compileSdk
+    buildToolsVersion rootProject.setup.buildTools
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 23
+        minSdkVersion rootProject.setup.minSdk
+        targetSdkVersion rootProject.setup.targetSdk
         versionCode 1
         versionName "1.0"
 
@@ -26,10 +26,14 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile files('libs/zxing.jar')
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
     testCompile 'junit:junit:4.12'
+
+    //support
+    compile "com.android.support:appcompat-v7:$rootProject.versions.libSupport"
+    compile "com.android.support:recyclerview-v7:$rootProject.versions.libSupport"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile 'com.google.zxing:core:3.3.0'
 }
 
 ext {
@@ -38,4 +42,5 @@ ext {
     PUBLISH_VERSION = '2.1'
 }
 
-apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
+//apply from: 'https://raw.githubusercontent
+//        .com/blundell/release-android-library/master/android-release-aar.gradle'
