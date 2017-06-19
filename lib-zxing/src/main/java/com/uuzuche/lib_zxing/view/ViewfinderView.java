@@ -24,12 +24,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.google.zxing.ResultPoint;
@@ -66,14 +62,14 @@ public final class ViewfinderView extends View {
         resultPointColor = resources.getColor(R.color.possible_result_points);
         possibleResultPoints = new HashSet<ResultPoint>(5);
 
-        scanLight = BitmapFactory.decodeResource(resources,
-                R.drawable.scan_light);
+        scanLight = BitmapFactory.decodeResource(resources, R.drawable.scan_light);
 
         initInnerRect(context, attrs);
     }
 
     /**
      * 初始化内部框的大小
+     *
      * @param context
      * @param attrs
      */
@@ -98,11 +94,6 @@ public final class ViewfinderView extends View {
         innercornerlength = (int) ta.getDimension(R.styleable.innerrect_inner_corner_length, 65);
         // 扫描框边角宽度
         innercornerwidth = (int) ta.getDimension(R.styleable.innerrect_inner_corner_width, 15);
-
-        // 扫描bitmap
-        Drawable drawable = ta.getDrawable(R.styleable.innerrect_inner_scan_bitmap);
-        if (drawable != null) {
-        }
 
         // 扫描控件
         scanLight = BitmapFactory.decodeResource(getResources(), ta.getResourceId(R.styleable.innerrect_inner_scan_bitmap, R.drawable.scan_light));
@@ -138,7 +129,7 @@ public final class ViewfinderView extends View {
 
             drawFrameBounds(canvas, frame);
 
-            drawScanLight(canvas, frame);
+            //drawScanLight(canvas, frame);
 
             Collection<ResultPoint> currentPossible = possibleResultPoints;
             Collection<ResultPoint> currentLast = lastPossibleResultPoints;

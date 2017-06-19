@@ -23,14 +23,9 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.Window;
 
 import java.io.IOException;
-
-import static android.R.attr.top;
-import static android.R.attr.width;
 
 /**
  * This object wraps the Camera service object and expects to be the only one talking to it. The
@@ -118,6 +113,7 @@ public final class CameraManager {
      * Opens the camera driver and initializes the hardware parameters.
      *
      * @param holder The surface object which the camera will draw preview frames into.
+     *
      * @throws IOException Indicates the camera driver failed to open.
      */
     public void openDriver(SurfaceHolder holder) throws IOException {
@@ -137,9 +133,9 @@ public final class CameraManager {
             //FIXME
             //     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             //�Ƿ�ʹ��ǰ��
-//      if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
-//        FlashlightManager.enableFlashlight();
-//      }
+            //      if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
+            //        FlashlightManager.enableFlashlight();
+            //      }
             FlashlightManager.enableFlashlight();
         }
     }
@@ -223,19 +219,19 @@ public final class CameraManager {
     public Rect getFramingRect() {
         Point screenResolution = configManager.getScreenResolution();
         // if (framingRect == null) {
-            if (camera == null) {
-                return null;
-            }
+        if (camera == null) {
+            return null;
+        }
 
-            int leftOffset = (screenResolution.x - FRAME_WIDTH) / 2;
+        int leftOffset = (screenResolution.x - FRAME_WIDTH) / 2;
 
-            int topOffset = 0;
-            if (FRAME_MARGINTOP != -1) {
-                topOffset = FRAME_MARGINTOP;
-            } else {
-                topOffset = (screenResolution.y - FRAME_HEIGHT) / 2;
-            }
-            framingRect = new Rect(leftOffset, topOffset, leftOffset + FRAME_WIDTH, topOffset + FRAME_HEIGHT);
+        int topOffset = 0;
+        if (FRAME_MARGINTOP != -1) {
+            topOffset = FRAME_MARGINTOP;
+        } else {
+            topOffset = (screenResolution.y - FRAME_HEIGHT) / 2;
+        }
+        framingRect = new Rect(leftOffset, topOffset, leftOffset + FRAME_WIDTH, topOffset + FRAME_HEIGHT);
         // }
         return framingRect;
     }
@@ -250,10 +246,10 @@ public final class CameraManager {
             Point cameraResolution = configManager.getCameraResolution();
             Point screenResolution = configManager.getScreenResolution();
             //modify here
-//      rect.left = rect.left * cameraResolution.x / screenResolution.x;
-//      rect.right = rect.right * cameraResolution.x / screenResolution.x;
-//      rect.top = rect.top * cameraResolution.y / screenResolution.y;
-//      rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+            //      rect.left = rect.left * cameraResolution.x / screenResolution.x;
+            //      rect.right = rect.right * cameraResolution.x / screenResolution.x;
+            //      rect.top = rect.top * cameraResolution.y / screenResolution.y;
+            //      rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
             rect.left = rect.left * cameraResolution.y / screenResolution.x;
             rect.right = rect.right * cameraResolution.y / screenResolution.x;
             rect.top = rect.top * cameraResolution.x / screenResolution.y;
@@ -291,6 +287,7 @@ public final class CameraManager {
      * @param data   A preview frame.
      * @param width  The width of the image.
      * @param height The height of the image.
+     *
      * @return A PlanarYUVLuminanceSource instance.
      */
     public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
