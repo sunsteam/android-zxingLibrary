@@ -40,7 +40,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /**
+        /*
          * 初始化组件
          */
         initView();
@@ -55,7 +55,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
         button2 = (Button) findViewById(R.id.button2);
         button3 = (Button) findViewById(R.id.button3);
         button4 = (Button) findViewById(R.id.button4);
-        /**
+        /*
          * 打开默认二维码扫描界面
          *
          * 打开系统图片选择界面
@@ -73,7 +73,7 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /**
+        /*
          * 处理二维码扫描结果
          */
         if (requestCode == REQUEST_CODE) {
