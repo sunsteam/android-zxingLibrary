@@ -2,10 +2,13 @@ package com.uuch.android_zxinglibrary;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.uuzuche.lib_zxing.activity.CaptureFragment;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
@@ -15,65 +18,72 @@ import com.uuzuche.lib_zxing.activity.CodeUtils;
  */
 public class SecondActivity extends BaseActivity {
 
-    private CaptureFragment captureFragment;
+    public boolean isOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Window window = getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int visibility= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+            window.getDecorView().setSystemUiVisibility(visibility);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+
         setContentView(R.layout.activity_second);
-        captureFragment = new CaptureFragment();
-        // 为二维码扫描界面设置定制化界面
-        CodeUtils.setFragmentArgs(captureFragment, R.layout.my_camera);
-        captureFragment.setAnalyzeCallback(analyzeCallback);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fl_my_container, captureFragment).commit();
+
 
         initView();
+
+        CaptureFragment captureFragment = new CaptureFragment();
+        // 为二维码扫描界面设置定制化界面
+        CodeUtils.setFragmentArgs(captureFragment, R.layout.my_camera);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fl_my_container, captureFragment).commit();
+
+        captureFragment.setAnalyzeCallback(new CodeUtils.AnalyzeCallback() {
+            @Override
+            public void onAnalyzeSuccess(Bitmap mBitmap, String result) {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(CodeUtils.RESULT_STRING, result);
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            }
+
+            @Override
+            public void onAnalyzeFailed() {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(CodeUtils.RESULT_STRING, "");
+                setResult(RESULT_CANCELED, resultIntent);
+                finish();
+            }
+        });
+
+
     }
 
-    public static boolean isOpen = false;
-
     private void initView() {
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linear1);
-        linearLayout.setOnClickListener(new View.OnClickListener() {
+        TextView caption = (TextView) findViewById(R.id.title_caption);
+        caption.setTextColor(Color.WHITE);
+        caption.setText("扫一扫");
+
+        TextView close = (TextView) findViewById(R.id.title_tv_left);
+        close.setTextColor(Color.WHITE);
+        close.setText("关闭");
+
+        View layout = findViewById(R.id.title_layout);
+        layout.setBackgroundColor(Color.parseColor("#cc333333"));
+
+        findViewById(R.id.camera_light).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isOpen) {
-                    CodeUtils.isLightEnable(true);
-                    isOpen = true;
-                } else {
-                    CodeUtils.isLightEnable(false);
-                    isOpen = false;
-                }
-
+                isOpen = !isOpen;
+                CodeUtils.isLightEnable(isOpen);
             }
         });
     }
-
-
-    /**
-     * 二维码解析回调函数
-     */
-    CodeUtils.AnalyzeCallback analyzeCallback = new CodeUtils.AnalyzeCallback() {
-        @Override
-        public void onAnalyzeSuccess(Bitmap mBitmap, String result) {
-            Intent resultIntent = new Intent();
-            Bundle bundle = new Bundle();
-            bundle.putInt(CodeUtils.RESULT_TYPE, CodeUtils.RESULT_SUCCESS);
-            bundle.putString(CodeUtils.RESULT_STRING, result);
-            resultIntent.putExtras(bundle);
-            SecondActivity.this.setResult(RESULT_OK, resultIntent);
-            SecondActivity.this.finish();
-        }
-
-        @Override
-        public void onAnalyzeFailed() {
-            Intent resultIntent = new Intent();
-            Bundle bundle = new Bundle();
-            bundle.putInt(CodeUtils.RESULT_TYPE, CodeUtils.RESULT_FAILED);
-            bundle.putString(CodeUtils.RESULT_STRING, "");
-            resultIntent.putExtras(bundle);
-            SecondActivity.this.setResult(RESULT_OK, resultIntent);
-            SecondActivity.this.finish();
-        }
-    };
 }

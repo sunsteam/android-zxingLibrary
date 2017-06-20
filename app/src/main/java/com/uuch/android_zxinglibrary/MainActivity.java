@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
@@ -30,32 +29,13 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
      */
     public static final int REQUEST_IMAGE = 112;
 
-    public Button button1 = null;
-    public Button button2 = null;
-    public Button button3 = null;
-    public Button button4 = null;
+
+    private int currentClickId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        /*
-         * 初始化组件
-         */
-        initView();
-    }
-
-
-    /**
-     * 初始化组件
-     */
-    private void initView() {
-        button1 = (Button) findViewById(R.id.button1);
-        button2 = (Button) findViewById(R.id.button2);
-        button3 = (Button) findViewById(R.id.button3);
-        button4 = (Button) findViewById(R.id.button4);
-        /*
+         /*
          * 打开默认二维码扫描界面
          *
          * 打开系统图片选择界面
@@ -64,10 +44,8 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
          *
          * 测试生成二维码图片
          */
-        button1.setOnClickListener(new ButtonOnClickListener(button1.getId()));
-        button2.setOnClickListener(new ButtonOnClickListener(button2.getId()));
-        button3.setOnClickListener(new ButtonOnClickListener(button3.getId()));
-        button4.setOnClickListener(new ButtonOnClickListener(button4.getId()));
+        setContentView(R.layout.activity_main);
+
     }
 
 
@@ -114,9 +92,14 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
 
 
     /**
-     * 请求CAMERA权限码
+     * 请求Camera权限
      */
     public static final int REQUEST_CAMERA_PERM = 101;
+
+    /**
+     * 请求读取SD卡权限
+     */
+    public static final int REQUEST_SD_PERM = 102;
 
 
     /**
@@ -125,21 +108,28 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         // Forward results to EasyPermissions
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
 
     @AfterPermissionGranted(REQUEST_CAMERA_PERM)
-    public void cameraTask(int viewId) {
-        if (EasyPermissions.hasPermissions(this, Manifest.permission.CAMERA)) {
-            // Have permission, do the thing!
-            onClick(viewId);
+    public void cameraTask() {
+        String[] perms = {Manifest.permission.CAMERA};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            openScanActivity();
         } else {
-            // Ask for one permission
-            EasyPermissions.requestPermissions(this, "需要请求camera权限",
-                    REQUEST_CAMERA_PERM, Manifest.permission.CAMERA);
+            EasyPermissions.requestPermissions(this, "需要请求camera权限",REQUEST_CAMERA_PERM, perms);
+        }
+    }
+
+    @AfterPermissionGranted(REQUEST_SD_PERM)
+    public void pickImageTask() {
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            startPickImage();
+        } else {
+            EasyPermissions.requestPermissions(this, "需要请求储存空间权限",REQUEST_SD_PERM, perms);
         }
     }
 
@@ -162,52 +152,38 @@ public class MainActivity extends BaseActivity implements EasyPermissions.Permis
         }
     }
 
+    public void decodeScan(View view) {
+        currentClickId = view.getId();
+        cameraTask();
+    }
 
-    /**
-     * 按钮点击监听
-     */
-    class ButtonOnClickListener implements View.OnClickListener {
+    public void decodeLocal(View view) {
+        pickImageTask();
+    }
 
-        private int buttonId;
-
-        public ButtonOnClickListener(int buttonId) {
-            this.buttonId = buttonId;
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.button2) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                startActivityForResult(intent, REQUEST_IMAGE);
-            } else if (v.getId() == R.id.button4) {
-                Intent intent = new Intent(MainActivity.this, ThreeActivity.class);
-                startActivity(intent);
-            } else {
-                cameraTask(buttonId);
-            }
-        }
+    public void encode(View view) {
+        Intent intent = new Intent(this, ThreeActivity.class);
+        startActivity(intent);
     }
 
 
-    /**
-     * 按钮点击事件处理逻辑
-     *
-     * @param buttonId buttonId
-     */
-    private void onClick(int buttonId) {
-        switch (buttonId) {
+    private void openScanActivity() {
+        switch (currentClickId) {
             case R.id.button1:
-                Intent intent = new Intent(getApplication(), CaptureActivity.class);
+                Intent intent = new Intent(this, CaptureActivity.class);
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.button3:
-                intent = new Intent(MainActivity.this, SecondActivity.class);
+                intent = new Intent(this, SecondActivity.class);
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
-            default:
-                break;
         }
+    }
+
+    private void startPickImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_IMAGE);
     }
 }

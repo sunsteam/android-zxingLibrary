@@ -27,9 +27,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SecondActivity" />
+        <activity android:name=".SecondActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <activity android:name=".ThreeActivity" />
-        <activity android:name=".BaseActivity"/>
     </application>
 
 
